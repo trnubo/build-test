@@ -15,8 +15,11 @@ node {
 
     dockerImage.inside {
         sh 'echo "OK"'
+        sh 'ls -l /entry.sh'
     }
 
     stage 'Push'
-    dockerImage.push()
+    docker.withRegistry('https://registry.hub.docker.com', '22ec7b27-f486-4683-a51d-606b88dac043') {
+        dockerImage.push()
+    }
 }
