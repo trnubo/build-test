@@ -13,6 +13,14 @@ node {
 
     def dockerImage = docker.build("trnubot/captainhook:${env.BUILD_ID}")
 
+    stage 'Test'
+    environment {
+        GOSS_VER = 'v0.3.4'
+    }
+    sh "wget -O goss  https://github.com/aelsabbahy/goss/releases/download/$GOSS_VER/goss-linux-amd64 && chmod +x goss"
+    sh "wget -O dgoss https://raw.githubusercontent.com/aelsabbahy/goss/$GOSS_VER/extras/dgoss/dgoss  && chmod +x dgoss"
+    sh 'ls -l'
+
     dockerImage.inside {
         sh 'echo "OK"'
         sh 'ls -l /entry.sh'
