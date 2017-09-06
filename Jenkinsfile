@@ -11,14 +11,14 @@ node {
 
     // Mark the code build 'stage'....
     stage('Build') {
-        def dockerImage = docker.build("trnubot/captainhook:${env.BUILD_ID}")
+        def dockerImage = docker.build("trnubot/captainhook:${env.BUILD_TAG}")
     }
 
     stage('Test') {
         withEnv(["GOSS_VER=v0.3.4","GOSS_PATH=${env.WORKSPACE}/goss"]) {
             sh "wget -O goss  https://github.com/aelsabbahy/goss/releases/download/$GOSS_VER/goss-linux-amd64 && chmod +x goss"
             sh "wget -O dgoss https://raw.githubusercontent.com/aelsabbahy/goss/$GOSS_VER/extras/dgoss/dgoss  && chmod +x dgoss"
-            sh "./dgoss trnubot/captainhook:${env.BUILD_ID}"
+            sh "./dgoss run trnubot/captainhook:${env.BUILD_TAG}"
 
             dockerImage.inside {
                 sh 'echo "OK"'
