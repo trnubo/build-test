@@ -10,9 +10,8 @@ node {
     }
 
     // Mark the code build 'stage'....
-    stage('Build') {
-        def dockerImage = docker.build("trnubot/captainhook:${env.BUILD_TAG}")
-    }
+    stage('Build')
+    def dockerImage = docker.build("trnubot/captainhook:${env.BUILD_TAG}")
 
     stage('Test') {
         try {
