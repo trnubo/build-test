@@ -1,0 +1,16 @@
+file:
+  /go/bin/app:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+port:
+  tcp6:8080:
+    listening: true
+    ip:
+    - '::'
+process:
+  app:
+    running: true

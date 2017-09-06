@@ -1,15 +1,45 @@
 node {
-   // Mark the code checkout 'stage'....
-   stage 'Checkout'
+    // Mark the code checkout 'stage'....
+    stage('Checkout') {
+        // Checkout code from repository
+        checkout scm
+    }
 
-   // Checkout code from repository
-   checkout scm
+    stage('Environment') {
+        sh 'printenv'
+    }
 
-   stage 'Environment'
-   sh 'printenv'
+    // Mark the code build 'stage'....
+    stage('Build')
+    def dockerImage = docker.build("trnubot/captainhook:${env.BUILD_TAG}")
 
-   // Mark the code build 'stage'....
-   stage 'Build'
-   // Run the maven build
-   sh "docker build -t trnubo/captainhook:latest ."
+    stage('Test') {
+        try {
+            withEnv(["GOSS_VER=v0.3.4","GOSS_PATH=${env.WORKSPACE}/goss","GOSS_OPTS=--format junit"]) {
+                sh "wget -O goss  https://github.com/aelsabbahy/goss/releases/download/$GOSS_VER/goss-linux-amd64 && chmod +x goss"
+                sh "./dgoss run trnubot/captainhook:${env.BUILD_TAG} | tee junit-out.xml"
+
+                dockerImage.inside {
+                    sh 'echo "OK"'
+                    sh 'ls -l /entry.sh'
+                }
+            }
+        }
+        finally {
+            junit 'junit-out.xml'
+        }
+    }
+
+    stage('Push') {
+        docker.withRegistry('https://registry.hub.docker.com', '22ec7b27-f486-4683-a51d-606b88dac043') {
+            if (env.BRANCH_NAME == 'master') {
+                echo 'Pushing docker tag latest'
+                dockerImage.push('latest')
+                dockerImage.push('master')
+            } else {
+                echo "Pushing docker tag ${env.BUILD_TAG}"
+                dockerImage.push()
+            }
+        }
+    }
 }
