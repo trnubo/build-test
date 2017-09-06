@@ -2,15 +2,15 @@ file:
   /go/bin/app:
     exists: true
     mode: "0755"
-    size: 6994648
     owner: root
     group: root
     filetype: file
     contains: []
 port:
-  tcp:8080:
-    listening: false
-    ip: []
+  tcp6:8080:
+    listening: true
+    ip:
+    - '::'
 process:
   app:
     running: true
