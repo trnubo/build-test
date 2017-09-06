@@ -32,7 +32,14 @@ node {
 
     stage('Push') {
         docker.withRegistry('https://registry.hub.docker.com', '22ec7b27-f486-4683-a51d-606b88dac043') {
-            dockerImage.push()
+            if (env.BRANCH_NAME == 'master') {
+                echo 'Pushing docker tag latest'
+                dockerImage.push('latest')
+                dockerImage.push('master')
+            } else {
+                echo "Pushing docker tag ${env.BUILD_TAG}"
+                dockerImage.push()
+            }
         }
     }
 }
