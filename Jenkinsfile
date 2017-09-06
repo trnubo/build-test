@@ -25,6 +25,7 @@ node {
                     sh 'ls -l /entry.sh'
                 }
             }
+        }
         finally {
             junit 'junit-out.xml'
         }
